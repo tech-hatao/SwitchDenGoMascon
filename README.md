@@ -2,7 +2,7 @@
 
 # SwitchDenGoMascon
 このライブラリはArduino Unoで瑞起の電車でＧＯ！！専用ワンハンドルコントローラーを読み取るためのライブラリです。  
-それ以外のボードでも使えると思いますが未検証です。
+Uno以外のボードでも使えると思いますが未検証です。
 
 # 必要なもの
 このライブラリを使うにはUSBホストシールドとUSB Host Library Rev. 2.0が必要です。  
@@ -73,13 +73,38 @@ SwitchDenGo.geMascon(BrakeLevel);  //制動レベルが0から9で返る　９�
 ### isPressed()
 引数で指定したコントローラーのボタンが押されているかを取得できます。
 
+ループ内で呼び出すと毎回trueが返るので連打動作になります。
+連打したくない場合はwasPressedを使ってください。
 
 ```
-SwitchDenGo.isPressed(BtnA);  //Aボタンが押されていればtrueが返る
-SwitchDenGo.isPressed(HatUp);  //上ボタンが押されていればtrueが返る
-```    
+loop(){
+  Usb.Task();
   
-引数に使えるボタン定義は以下の通りです。
+  //ループ中で何度も呼び出されるので連打動作になる
+  SwitchDenGo.isPressed(BtnA);  //Aボタンが押されていればtrueが返る 
+  SwitchDenGo.isPressed(HatUp);  //上ボタンが押されていればtrueが返る
+}
+```    
+
+
+### wasPressed()
+引数で指定したコントローラーのボタンが押されたかを取得できます。
+isPressedと違い一度呼び出されるとコントローラーのボタンが離されるまでfalseを返します。
+
+これによりループ内で呼び出しても連打になりません。
+
+```
+void lopp(){
+  Usb.Task();
+  
+  //ループ内でも一度呼び出すとボタンを離すまでfalseを返す
+  SwitchDenGo.wasPressed(BtnA);  //Aボタンが押されたらtrueが返る 
+  SwitchDenGo.wasPressed(HatUp);  //上ボタンが押されたらtrueが返る
+}
+```    
+
+### ボタン定義
+isPressed、wasPressedで引数に使えるボタン定義は以下の通りです。
 
 ```
 BtnL //Lボタン
