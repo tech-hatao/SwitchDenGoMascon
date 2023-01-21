@@ -3,6 +3,7 @@
 
 #include <usbhid.h>
 #include <hiduniversal.h>
+#include <usbhub.h>
 
 const uint16_t SWITCH_DEN_GO_VID = 0x0F0D;
 const uint16_t SWITCH_DEN_GO_PID = 0x00C1;
@@ -42,7 +43,7 @@ enum BtnNum {
   HatUpLeft,
 };
 
-const uint8_t BUTTONS[] = {
+const uint8_t MASCON_BUTTONS[] = {
   0x10, // L
   0x20, // R
   0x40, // ZL
@@ -75,13 +76,17 @@ class SwitchDenGoMascon : public HIDUniversal {
 private:
   bool buttonValues[24]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   bool readedButtonValues[24]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  unsigned long pressTime[24]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  bool readedPressedFor[24]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   uint8_t masconValue; 
 public:
   SwitchDenGoMascon(USB *p) : HIDUniversal(p){};
   bool connected();
   uint8_t getMascon(GetMasonType type = HandlePosition);
-  bool isPressed(BtnNum b);
-  bool wasPressed(BtnNum b);
+  bool isPressed(BtnNum btn);
+  bool wasPressed(BtnNum btn);
+  bool isPressedFor(BtnNum btn,int time);
+  bool wasPressedFor(BtnNum btn,int time);
 protected:
   void ParseHIDData(USBHID *hid __attribute__((unused)), bool is_rpt_id __attribute__((unused)), uint8_t len, uint8_t *buf) {
     if (HIDUniversal::VID == SWITCH_DEN_GO_VID && HIDUniversal::PID == SWITCH_DEN_GO_PID){
